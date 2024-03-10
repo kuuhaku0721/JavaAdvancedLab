@@ -7,10 +7,15 @@ public class Main {
         Lab01 lab01 = new Lab01();
         Lab02 lab02 = new Lab02();
         Lab03 lab03 = new Lab03();
+        Lab04 lab04 = new Lab04();
+        Lab05 lab05 = new Lab05();
 
 
         lab01.RunLab01();
         // lab02.RunLab02();
         // lab03.RunLab03();
+        // lab04.RunLab04();
+        // lab05.RunLab05(); // 不推荐
+
     }
 }
