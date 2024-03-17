@@ -162,7 +162,7 @@ public class Lab04 {
 
     private void ShowClsInfo(){
         System.out.println("----父类----");
-        getClassInfo(Base.class);
+        getClassInfo(BaseCls.class);
         System.out.println("----子类----");
         getClassInfo(Derived.class);
     }
