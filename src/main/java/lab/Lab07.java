@@ -97,6 +97,14 @@ class DerivedCls extends BaseCls {
     private void testDeprecationWarning() {
         Date date = new Date(2020, 1, 1);
     }
+
+
+    /**
+     * 下面这个方法是给实验八用的
+     */
+    public void SendToLab08(){
+        System.out.println("虽然你没啥用，但姑且打印一句话看看");
+    }
 }
 
 

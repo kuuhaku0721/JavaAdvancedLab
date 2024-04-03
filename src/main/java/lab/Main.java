@@ -43,7 +43,7 @@ public class Main {
                     ((Lab07) cls.newInstance()).RunLab07();
                     break;
                 case 8:
-                    // ((Lab08) cls.newInstance()).RunLab08();
+                    ((Lab08) cls.newInstance()).RunLab08();
                     break;
                 case 9:
                     // ((Lab09) cls.newInstance()).RunLab09();
