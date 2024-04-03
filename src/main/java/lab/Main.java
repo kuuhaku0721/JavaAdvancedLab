@@ -2,6 +2,12 @@ package lab;
 
 import java.util.Scanner;
 
+/**
+ * Origin: kuuhaku
+ * Time: 403
+ * Status: Complete
+ */
+
 public class Main {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
