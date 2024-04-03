@@ -49,7 +49,8 @@ public class Main {
                     ((Lab09) cls.newInstance()).RunLab09();
                     break;
                 case 10:
-                    // ((Lab010) cls.newInstance()).RunLab010();
+                    System.out.println("如果不想看到第一条报错信息，可以手动更改sql驱动");  // 启动之前需要先修改SQL连接信息
+                    ((Lab010) cls.newInstance()).RunLab010();
                     break;
             }
         }
