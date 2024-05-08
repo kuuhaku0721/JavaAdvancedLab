@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 
 /**
+ * IO和XML
  * (1) 创建一个文本文件，使用缓冲流写入若干字符，并读出显示； (clear)
  *     创建一个二进制文件和一个对象（包含若干个类型为整数、浮点数或字符串的属性），使用数据流写入若干个对象实例，并读出显示。（基础） (clear)
  * (2) 使用DOM解析一个简单的XML文件。   (clear)

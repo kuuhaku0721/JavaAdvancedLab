@@ -210,3 +210,12 @@ public class Lab05 {
     }
 }
 
+//class runner{
+//    public static void main(String[] args) {
+//        Lab05 lab05 = new Lab05();
+//        // lab05.producerConsumerExample();
+//        // lab05.readerWriterExample();
+//        lab05.diningPhilosophersExample();
+//    }
+//}
+
