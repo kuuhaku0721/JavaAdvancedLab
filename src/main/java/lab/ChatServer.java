@@ -130,7 +130,7 @@ public class ChatServer {
         server.start(10721);
     }
 
-//    public static void main(String[] args) {
-//        Run();
-//    }
+    public static void main(String[] args) {
+        Run();
+    }
 }

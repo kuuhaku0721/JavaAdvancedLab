@@ -13,7 +13,6 @@ public class Lab05 {
     public void producerConsumerExample() {
         LinkedList<Integer> buffer = new LinkedList<>();
         int maxSize = 10;
-
         Thread producer = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (buffer) {
@@ -33,7 +32,6 @@ public class Lab05 {
                 }
             }
         });
-
         Thread consumer = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (buffer) {
@@ -70,7 +68,6 @@ public class Lab05 {
         // 解决 == 上锁
         ReadWriteLock rwl = new ReentrantReadWriteLock();
         Map<String, String> data = new HashMap<>();
-
         /**
          * 这么执行是有问题的，线程可以同步，但是当前这个函数可是按顺序执行的
          * 按照目前的写法，它一定是先启动写者，然后启动读者
@@ -87,6 +84,11 @@ public class Lab05 {
                 } finally {
                     // 释放锁
                     rwl.writeLock().unlock();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -96,21 +98,25 @@ public class Lab05 {
                 try {
                     String value = data.get("key");
                     System.out.println("读者 读取数据");
-                } finally {
+                }  finally {
                     rwl.readLock().unlock();
+                    try {
+                        Thread.sleep(80);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
-
         writer.start();
         reader.start();
-
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 writer.interrupt();
                 reader.interrupt();
                 timer.cancel(); // 取消定时器
+                System.exit(0);
             }
         }, 1000);
     }
@@ -120,32 +126,28 @@ public class Lab05 {
         int numPhilosophers = 5;
         Philosopher[] philosophers = new Philosopher[numPhilosophers];
         Object[] chopsticks = new Object[numPhilosophers];
-
         // 初始化
         for (int i = 0; i < numPhilosophers; i++) {
             chopsticks[i] = new Object();
         }
-
         for (int i = 0; i < numPhilosophers; i++) {
             Object leftChopstick = chopsticks[i];
             Object rightChopstick = chopsticks[(i + 1) % numPhilosophers];
-
             // 就是每个人只能拿到自己左右手边的筷子
             if (i == numPhilosophers - 1) {
                 philosophers[i] = new Philosopher(rightChopstick, leftChopstick);
             } else {
                 philosophers[i] = new Philosopher(leftChopstick, rightChopstick);
             }
-
             Thread t = new Thread(philosophers[i]);
             t.start();
-
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     t.interrupt();
                     // t.stop();    // 没有很好的起效果，不知道为啥
                     timer.cancel(); // 取消定时器
+                    System.exit(0);  // 不如直接挂掉来的快
                 }
             }, 1000);
         }
@@ -210,12 +212,12 @@ public class Lab05 {
     }
 }
 
-//class runner{
-//    public static void main(String[] args) {
-//        Lab05 lab05 = new Lab05();
-//        // lab05.producerConsumerExample();
-//        // lab05.readerWriterExample();
-//        lab05.diningPhilosophersExample();
-//    }
-//}
+class runner{
+    public static void main(String[] args) {
+        Lab05 lab05 = new Lab05();
+        // lab05.producerConsumerExample();
+        // lab05.readerWriterExample();
+        lab05.diningPhilosophersExample();
+    }
+}
 

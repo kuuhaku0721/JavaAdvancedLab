@@ -20,23 +20,19 @@ public class Lab02 {
         set.add("雷电芽衣");
         set.add("布洛妮娅·等待修改");
         set.add("等待删除");
-
         // 使用迭代器输出
         System.out.println("初始化:");
         Iterator<String> iterator = set.iterator();
         while (iterator.hasNext()) {
             System.out.println(iterator.next());
         }
-
         // 删
         set.remove("等待删除");
-
         // 改
         if(set.contains("布洛妮娅·等待修改")){
             set.remove("布洛妮娅·等待修改");
             set.add("布洛妮娅·扎伊切克");
         }
-
         // 查
         System.out.println("最终结果:");
         iterator = set.iterator();
@@ -53,20 +49,16 @@ public class Lab02 {
         list.add("雷电芽衣");
         list.add("布洛妮娅·等待修改");
         list.add("等待删除");
-
         // 使用迭代器输出
         System.out.println("初始化:");
         Iterator<String> iterator = list.iterator();
         while (iterator.hasNext()) {
             System.out.println(iterator.next());
         }
-
         // 删
         list.remove(3);
-
         // 改
         list.set(2, "布洛妮娅·扎伊切克");
-
         // 查
         System.out.println("最终结果:");
         iterator = list.iterator();
@@ -83,7 +75,6 @@ public class Lab02 {
         map.put(2, "雷电芽衣");
         map.put(3, "布洛妮娅·等待修改");
         map.put(4, "等待删除");
-
         // 使用迭代器输出
         System.out.println("初始化:");
         Set<Map.Entry<Integer, String>> entrySet = map.entrySet();
@@ -92,13 +83,10 @@ public class Lab02 {
             Map.Entry<Integer, String> entry = iterator.next();
             System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
         }
-
         // 删
         map.remove(4);
-
         // 改
         map.replace(3, "布洛妮娅·扎伊切克");
-
         // 查
         System.out.println("最终结果：");
         for (Map.Entry<Integer, String> entry : map.entrySet()) {
@@ -133,7 +121,6 @@ public class Lab02 {
         }
         return max;
     }
-
     private void TemplateExample() {
         System.out.println("-------------使用泛型----------------");
         Integer[] intArray = {1,0,7,2,1};

@@ -47,7 +47,7 @@ class TestCustomAnnotation{
 // 1、编写一个基类
 @KuuhakuAnnotation(age = 721)       // 3、将注解加入到基类
 class BaseCls {
-    @Deprecated                                                         // 8、实现三种内建注解之二 @Deprecated 过时  代码提示器里画横线的那些，指明这些方法过时了不推荐使用
+    @Deprecated   // 8、实现三种内建注解之二 @Deprecated 过时  代码提示器里画横线的那些，指明这些方法过时了不推荐使用
     public void print(){
         // 1、至少
         System.out.println("包含一种方法");
@@ -72,7 +72,6 @@ class DerivedCls extends BaseCls {
     public void beOverride(){
         System.out.println("这个是给Override用的，上面那个给注解用了");
     }
-
     // 6、新增一个方法
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})         // 8、实现三种内建注解之三 @SuppressWarnings 用于抑制特定类型的警告
     public void suppress_warn() {
@@ -97,8 +96,6 @@ class DerivedCls extends BaseCls {
     private void testDeprecationWarning() {
         Date date = new Date(2020, 1, 1);
     }
-
-
     /**
      * 下面这个方法是给实验八用的
      */

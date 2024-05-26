@@ -89,9 +89,13 @@ public class Lab01 {
     }
     private void Exception_SQLException(){
         try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/db", "username", "password");
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/db",
+                    "username",
+                    "password");
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM non_existing_table");
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT * FROM non_existing_table");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -103,20 +107,6 @@ public class Lab01 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 三部分分开启动
-     */
-    public void RunException(){
-        Exception_NullPointerException();
-        Exception_ClassNotFoundException();
-        Exception_ClassCastException();
-        Exception_IllegalArgumentException();
-        Exception_InputMismatchException();
-        Exception_IllegalAccessException();
-        Exception_SQLException();
-        Exception_IOException();
     }
 
     public void ThrowException() throws Exception{
@@ -136,6 +126,19 @@ public class Lab01 {
         }
     }
 
+    /**
+     * 三部分分开启动
+     */
+    public void RunException(){
+        Exception_NullPointerException();
+        Exception_ClassNotFoundException();
+        Exception_ClassCastException();
+        Exception_IllegalArgumentException();
+        Exception_InputMismatchException();
+        Exception_IllegalAccessException();
+        Exception_SQLException();
+        Exception_IOException();
+    }
     /**
      * 一次启动三个
      * @throws Exception

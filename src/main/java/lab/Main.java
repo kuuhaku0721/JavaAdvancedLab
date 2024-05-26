@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 /**
  * Origin: kuuhaku
- * Time: 403
+ * Time: 4.03
  * Status: Complete
  */
 

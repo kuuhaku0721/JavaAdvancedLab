@@ -2,8 +2,11 @@ package lab;
 
 
 /**
- * (1) 在MySQL(你总不能指望我用Redis吧)中定义一个过程和一个函数，使用JDBC调用他们。这个过程/函数可以是计算一个数学公式，也可以访问一张表。（基础） (clear)
- * (2) 在MySQL中创建一张表，至少包含一个可存储大文本的字段和一个可存储二进制数据的字段，用JDBC写入一篇文章和一幅图像，并读出他们。（基础） (clear)
+ * (1) 在MySQL(你总不能指望我用Redis吧)中定义一个过程和一个函数，
+ *     使用JDBC调用他们。这个过程/函数可以是计算一个数学公式，
+ *     也可以访问一张表。（基础） (clear)
+ * (2) 在MySQL中创建一张表，至少包含一个可存储大文本的字段和一个可存储二进制数据的字段，
+ *     用JDBC写入一篇文章和一幅图像，并读出他们。（基础） (clear)
  */
 
 import java.io.*;
@@ -28,13 +31,16 @@ class LargeDataTable {
     public void CreateTable() throws Exception {
         if (!isTableExists(conn, "large_data_table")) {
             Statement createTableStatement = conn.createStatement();
-            createTableStatement.executeUpdate("CREATE TABLE large_data_table (id INT AUTO_INCREMENT PRIMARY KEY, text_data TEXT, image_data LONGBLOB)");
+            createTableStatement.executeUpdate(
+                    "CREATE TABLE large_data_table (id INT AUTO_INCREMENT PRIMARY KEY, " +
+                            "text_data TEXT, image_data LONGBLOB)");
         }
     }
     // 检查表是否存在
     private boolean isTableExists(Connection connection, String tableName) throws Exception {
         DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet resultSet = metaData.getTables(null, null, tableName, null)) {
+        try (ResultSet resultSet = metaData.getTables(
+                null, null, tableName, null)) {
             return resultSet.next();
         }
     }
@@ -42,12 +48,14 @@ class LargeDataTable {
     public void InsertToTable() throws Exception {
         // 不提供传参版本，如果想修改传入内容，请自行手动更改(多余的东西没必要做，好钢用在刀刃上，时间用在更有意义的事情上)
         // 插入文本数据
-        String text = "This is a large text.如果你觉得需要，之后找个文本文件，读取文件，转成字符串，然后放进去就行了。文件的上限取决于MySQL的TEXT类型的上限";
+        String text = "This is a large text.如果你觉得需要，" +
+                "之后找个文本文件，读取文件，转成字符串，然后放进去就行了。文件的上限取决于MySQL的TEXT类型的上限";
         // 插入图像数据
         File imageFile = new File("src/main/resources/img/homura.png");
         FileInputStream fis = new FileInputStream(imageFile);
 
-        PreparedStatement insertStatement = conn.prepareStatement("INSERT INTO large_data_table (text_data, image_data) VALUES (?, ?);");
+        PreparedStatement insertStatement = conn.prepareStatement(
+                "INSERT INTO large_data_table (text_data, image_data) VALUES (?, ?);");
         insertStatement.setString(1, text);
         insertStatement.setBinaryStream(2, fis, (int)imageFile.length());
         insertStatement.executeUpdate();

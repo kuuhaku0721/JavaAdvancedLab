@@ -74,3 +74,13 @@ public class Lab09 {
         return value > 0;
     }
 }
+
+
+
+
+
+
+
+
+
+

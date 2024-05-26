@@ -77,7 +77,6 @@ public class Lab03 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return sb.toString();
     }
 
@@ -89,10 +88,8 @@ public class Lab03 {
         People kiana = new People(16, 8459.87f, "琪亚娜·卡斯兰娜");
         People mei = new People(17, 8962.90f, "雷电芽衣");
         People bronya = new People(14, 7455.76f, "布洛妮娅·扎伊切克");
-
         // 写入二进制文件
         WriteBinaryFile("test.bin", kiana, mei, bronya);
-
         // 读取并显示二进制文件内容
         ReadBinaryFile("test.bin");
     }
@@ -135,33 +132,27 @@ public class Lab03 {
      */
     private void ParseXMLFile() {
         String fileName = "pom.xml";
-
         try {
             File xmlFile = new File(fileName);
             // 从文件创建一个文档对象，之后会对这个document对象进行解析
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(xmlFile);
-
             document.getDocumentElement().normalize();
             System.out.println("Root element: " + document.getDocumentElement().getNodeName());
-
             // 想象一个树的形状，它的每一个<>就是树上的一个节点，相互嵌套的<>就是父子节点
             NodeList nodeList = document.getElementsByTagName("*");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
-
                 // 这里可以联想一下C#里面，创建窗口时用的xaml，它也有类似<PushButton Name=""> 这些内容
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
                     System.out.println("Element: " + element.getNodeName());
-
                     NamedNodeMap attributes = element.getAttributes();
                     for (int j = 0; j < attributes.getLength(); j++) {
                         Node attribute = attributes.item(j);
                         System.out.println("Attribute: " + attribute.getNodeName() + " = " + attribute.getNodeValue());
                     }
-
                     // 它有子节点的情况就更容易想象了，<GroupBox>里面也是要放子节点的吧
                     if (element.hasChildNodes()) {
                         NodeList children = element.getChildNodes();

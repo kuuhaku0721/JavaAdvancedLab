@@ -135,7 +135,7 @@ public class ChatClient extends JFrame {
         client2.setVisible(true);
     }
 
-//    public static void main(String[] args) {
-//        Run();
-//    }
+    public static void main(String[] args) {
+        Run();
+    }
 }

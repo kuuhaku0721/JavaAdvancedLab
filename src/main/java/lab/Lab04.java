@@ -14,24 +14,19 @@ class Base {
     protected int age;
     private double bonus;
     boolean flag;
-
     // 四种修饰符的方法
     public void publicMethod() {
         System.out.println("public method.");
     }
-
     protected void protectedMethod() {
         System.out.println("protected method.");
     }
-
     private void privateMethod() {
         System.out.println("private method.");
     }
-
     void defaultMethod() {
         System.out.println("default method.");
     }
-
     // 四种修饰符的构造函数  默认无参构造抛出异常
     public Base() {
         System.out.println("public constructor: Base");
@@ -39,15 +34,12 @@ class Base {
     public Base(String name) {
         System.out.println("public constructor: Base" + ", para: " + name);
     }
-
     protected Base(int age) {
         System.out.println("protected constructor");
     }
-
     private Base(double bonus) {
         System.out.println("private constructor");
     }
-
     Base(boolean flag) throws KuuhakuException {
         throw new KuuhakuException("这个是自定义的Kuuhaku异常");
     }
@@ -70,11 +62,9 @@ class Derived extends Base {
         super();
         System.out.println("public constructor: Derived" + ", para: " + name);
     }
-
     protected Derived(int age) {
         super(age);
     }
-
 //    // 很显然，没法调用父类的私有方法，异常我能忍，报错我忍不了
 //    private Derived(double bonus) {
 //        super(bonus);
@@ -83,7 +73,6 @@ class Derived extends Base {
     Derived(boolean flag)  throws Exception  {
         super(flag);
     }
-
     public void print(){
         System.out.println("啊啦啦~~我被创建啦");
     }
@@ -126,7 +115,6 @@ public class Lab04 {
                 }
                 System.out.print(") ");
             }
-
             // 异常
             Class<?>[] exceptionTypes = method.getExceptionTypes();
             if (exceptionTypes.length > 0) {

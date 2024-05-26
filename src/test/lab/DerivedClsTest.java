@@ -54,7 +54,6 @@ public class DerivedClsTest {
         derivedCls.testUncheckedWarning();
         System.out.println("testUncheckedWarning 方法测试结束。");
     }
-
     @Test
     public void testRawtypesWarning() {
         System.out.println("testRawtypesWarning 方法测试开始...");
