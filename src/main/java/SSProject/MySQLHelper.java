@@ -51,6 +51,28 @@ public class MySQLHelper {
     }
 
     /**
+     * 执行SQL语句
+     * @param sql: 要执行的sql语句
+     */
+    public void executeSQL(String sql) {
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+            statement.execute(sql);
+        } catch (SQLException e) {
+            System.err.println("SQL 语句执行失败: " + e.getMessage());
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("关闭 Statement 失败: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
      * 测试用main函数
      */
     public static void main(String[] args) throws Exception {

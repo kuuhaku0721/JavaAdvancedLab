@@ -19,48 +19,27 @@ package SSProject;
  */
 
 
-import lab.ChatClient;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
 
 public class ShineSpotClient extends JFrame {
-    private JPanel leftPanel;
-    private JList<String> userList;
-    private JButton privateChatButton;
-    private JButton groupChatButton;
-    private JButton changePasswordButton;
-
     private JPanel rightPanel;
     private CardLayout cardLayout;
-    private JPanel privateChatPanel;
-    private JPanel groupChatPanel;
-    private JPanel changePasswordPanel;
     private JTextArea privateChatTextArea;
     private JTextArea groupChatTextArea;
     private JScrollPane userListScrollPane;
 
-    private int client_id;
     private String client_name;
-    private MySQLHelper helper;
-    private List recentMessage;
-
-    // 网络套接字部分
     private Socket socket;
     private BufferedReader reader;
     private BufferedWriter writer;
 
     public ShineSpotClient(String name) {
         // 初始化客户端信息
-        Random random = new Random();
-        client_id = random.nextInt(255) + 1;
         client_name = name;
 
         // 初始化窗口
@@ -72,7 +51,6 @@ public class ShineSpotClient extends JFrame {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            // 匿名，好用
             new Thread(new RecvMsg()).start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,7 +62,7 @@ public class ShineSpotClient extends JFrame {
      * 把自己的信息发送给服务器
      */
     private void sendSelf() {
-        String sendMsg = "Self," + client_id + "," + client_name;
+        String sendMsg = "Self," + client_name;
         System.out.println(sendMsg);
         try {
             writer.write(sendMsg);
@@ -99,13 +77,13 @@ public class ShineSpotClient extends JFrame {
      * 初始化窗口
      */
     private void initWindow() {
-        setTitle("Client Window");
+        setTitle(client_name);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setSize(800, 600);
 
         // 创建左侧面板
-        leftPanel = new JPanel();
+        JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
         // 创建用户列表
@@ -113,9 +91,9 @@ public class ShineSpotClient extends JFrame {
         leftPanel.add(userListScrollPane);
 
         // 创建页面切换按钮
-        privateChatButton = new JButton("Private Chat");
-        groupChatButton = new JButton("Group Chat");
-        changePasswordButton = new JButton("Change Password");
+        JButton privateChatButton = new JButton("Private Chat");
+        JButton groupChatButton = new JButton("Group Chat");
+        JButton changePasswordButton = new JButton("Change Password");
         leftPanel.add(privateChatButton);
         leftPanel.add(groupChatButton);
         leftPanel.add(changePasswordButton);
@@ -126,7 +104,7 @@ public class ShineSpotClient extends JFrame {
         rightPanel.setLayout(cardLayout);
 
         // 创建私聊页面
-        privateChatPanel = new JPanel();
+        JPanel privateChatPanel = new JPanel();
         privateChatPanel.setLayout(new BorderLayout());
         privateChatTextArea = new JTextArea();
         privateChatTextArea.setEditable(false);
@@ -156,7 +134,7 @@ public class ShineSpotClient extends JFrame {
         rightPanel.add(privateChatPanel, "Private Chat");
 
         // 创建群聊页面
-        groupChatPanel = new JPanel();
+        JPanel groupChatPanel = new JPanel();
         groupChatPanel.setLayout(new BorderLayout());
         groupChatTextArea = new JTextArea();
         groupChatTextArea.setEditable(false);
@@ -182,7 +160,7 @@ public class ShineSpotClient extends JFrame {
         rightPanel.add(groupChatPanel, "Group Chat");
 
         // 创建修改密码页面
-        changePasswordPanel = new JPanel();
+        JPanel changePasswordPanel = new JPanel();
         changePasswordPanel.setLayout(new BorderLayout());
         JTextField oldPasswordTextField = new JTextField();
         JTextField newPasswordTextField = new JTextField();
@@ -241,7 +219,7 @@ public class ShineSpotClient extends JFrame {
      * @param message：私聊要发送的消息
      */
     private void SingleChat(String targetName, String message) {
-        System.out.println(client_name + "给[" + targetName + "]说：" + message);
+        // System.out.println(client_name + "给[" + targetName + "]说：" + message);
 
         // Single,sender,receiver,msg
         String sendMsg = "Single," + client_name + "," + targetName + "," + message;
@@ -260,14 +238,13 @@ public class ShineSpotClient extends JFrame {
      * @param message 群聊发送的消息
      */
     private void GroupChat(String message) {
-        System.out.println(client_name + "说了：" + message);
+        // System.out.println(client_name + "说了：" + message);
 
         String sendMsg = "Group," + client_name + ",nil," + message;
         try {
             writer.write(sendMsg);
             writer.newLine();
             writer.flush();
-            // groupChatTextArea.append("\t\t\t\t\t" + message + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -275,13 +252,18 @@ public class ShineSpotClient extends JFrame {
 
     /**
      * 修改密码
-     * @param pwd：要修改的新密码
+     * @param newPwd：要修改的新密码
      */
-    private void ChangePwd(String oldPwd, String pwd) {                 // TODO 修改密码的业务功能之后再完善
-        System.out.println("将要修改的密码是：" + pwd);
-        String sendMsg = "Change," + oldPwd + "," + pwd;
-        // TODO 调用套接字的send
-        System.out.println(sendMsg);
+    private void ChangePwd(String oldPwd, String newPwd) {
+        String sendMsg = "Change," + client_name + "," + oldPwd + "," + newPwd;
+        // System.out.println("将要发送出去的：" + sendMsg);
+        try {
+            writer.write(sendMsg);
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -291,34 +273,47 @@ public class ShineSpotClient extends JFrame {
         public void run() {
             try {
                 String message;
-                while ((message = reader.readLine()) != null) {                     // TODO 现在的问题，发了，收到了，显示不出来....这下，得一步步调了
-                    // 会接收到三种类型消息：
-                    // 1、Signal：私聊，需要判断ID是否是自己，不是忽略，是了显示
-                    // 2、Group：直接显示，并且添加到数据库消息记录中
-                    // 3、Online：当前在线用户信息，需要显示到ListView中
-                    // 标记,sender,targetName,msg
+                while ((message = reader.readLine()) != null) {
+                    /** 修改密码结果提示 成功为success，失败为error **/
+                    if(message.equals("update error")) {
+                        JOptionPane.showMessageDialog(ShineSpotClient.this,
+                                "修改密码失败\n用户名或密码错误", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
+                    if(message.equals("update success")) {
+                        JOptionPane.showMessageDialog(ShineSpotClient.this,
+                                "修改密码成功", "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    /** 处理接受到的消息，根据不同的消息类型执行不同的处理 **/
                     String[] strs = message.split(",");
-                    if(strs[0].equals("Single")) {
-                        String msg = "nil";
-                        if(strs[2].equals(client_name)) {
-                            msg = "[" + strs[1] + "]: " + strs[3] + "\n";
+                    if(!strs[0].equals("Online") && strs.length < 4) continue;
+                    switch (strs[0]) {
+                        case "Single" -> {
+                            String msg = "nil";
+                            if (strs[2].equals(client_name)) {
+                                msg = "[" + strs[1] + "]: " + strs[3] + "\n";
+                            }
+                            if (!msg.equals("nil"))
+                                privateChatTextArea.append(msg);
+                            // System.out.println("收到私聊：" + msg);
                         }
-                        privateChatTextArea.append(msg);
-                        System.out.println("收到私聊：" + msg);
-                    } else if(strs[0].equals("Group")) {
-                        String msg = "[" + strs[1] + "]: " + strs[3] + "\n";
-                        groupChatTextArea.append(msg);
-                        System.out.println("收到群聊: " + msg);
-                    } else if(strs[0].equals("Online")) {
-                        DefaultListModel<String> userListModel = new DefaultListModel<>();
-                        for (int i = 0; i < strs.length; i++) {
-                            userListModel.addElement(strs[i]);
+                        case "Group" -> {
+                            String msg = "[" + strs[1] + "]: " + strs[3] + "\n";
+                            groupChatTextArea.append(msg);
+                            // System.out.println("收到群聊: " + msg);
                         }
-                        userList = new JList<>(userListModel);
-                        userListScrollPane.setViewportView(userList);
-                    } else {
-                        System.out.println("client--接受到的消息有误，程序无法正常执行...");
-                        System.out.println(message);
+                        case "Online" -> {
+                            DefaultListModel<String> userModel = new DefaultListModel<>();
+                            for (int i = 1; i < strs.length; i++) {
+                                if (!strs[i].equals(""))
+                                    userModel.addElement(strs[i]);
+                            }
+                            JList<String> userList = new JList<>(userModel);
+                            userListScrollPane.setViewportView(userList);
+                        }
+                        default -> {
+                            System.out.println("client--接受到的消息有误，程序无法正常执行...");
+                            System.out.println(message);
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -326,32 +321,4 @@ public class ShineSpotClient extends JFrame {
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static void main(String[] args) throws Exception {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ShineSpotClient window = new ShineSpotClient("kuuhaku");
-                window.setVisible(true);
-            }
-        });
-    }
 }
-

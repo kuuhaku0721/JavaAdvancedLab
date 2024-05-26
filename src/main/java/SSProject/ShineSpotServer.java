@@ -30,8 +30,13 @@ import java.util.Map;
  */
 public class ShineSpotServer {
     private List<ClientHandler> clients;
-    public ShineSpotServer() {
+    private List<String> users;
+    private MySQLHelper helper;
+
+    public ShineSpotServer() throws Exception {
         clients = new ArrayList<>();
+        users = new ArrayList<>();
+        helper = new MySQLHelper();
     }
 
     public void start(int port) {
@@ -58,7 +63,7 @@ public class ShineSpotServer {
         String sendMsg;
         if(targetName.equals("nil")) {
             // 群聊
-            sendMsg = "Group";
+            sendMsg = "Group,";
         } else {
             // 私聊
             sendMsg = "Single,";
@@ -66,6 +71,16 @@ public class ShineSpotServer {
         sendMsg += sender + "," + targetName + "," + message;
         for (ClientHandler client : clients) {
             client.sendTo(sendMsg);
+        }
+    }
+
+    /**
+     * 给所有用户发送消息，方便使用的
+     * @param msg: 要发送的消息体
+     */
+    private void SendToAll(String msg) {
+        for (ClientHandler client : clients) {
+            client.sendTo(msg);
         }
     }
     /**
@@ -91,8 +106,6 @@ public class ShineSpotServer {
         private Socket socket;
         private BufferedReader reader;
         private BufferedWriter writer;
-        private String userName;
-
         public ClientHandler(Socket socket) {
             try {
                 this.socket = socket;
@@ -116,27 +129,44 @@ public class ShineSpotServer {
                     String sender = "";
                     String targetName = "";
                     String msg = "";
-                    if(strs[0].equals("Self")) {
-                        this.userName = strs[2];
-                        // 把当前在线的成员信息发出去
-                        StringBuilder sendMsg = new StringBuilder("Online,");
-                        for (ClientHandler client : clients) {
-                            sendMsg.append(client.userName).append(",");
+                    switch (strs[0]) {
+                        case "Self" -> {
+                            users.add(strs[1]);
+
+                            StringBuilder sendMsg = new StringBuilder("Online,");
+                            for (String s : users) {
+                                sendMsg.append(s).append(",");
+                            }
+                            SendToAll(sendMsg.toString());
                         }
-                        sendTo(sendMsg.toString());
-                    } else if(strs[0].equals("Single")){
-                        sender += strs[1];
-                        targetName += strs[2];
-                        msg += strs[3];
-                    } else if(strs[0].equals("Group")) {
-                        sender += strs[1];
-                        targetName = "";
-                        msg += strs[3];
-                    } else if(strs[0].equals("Change")) {
-                        // TODO 待办 修改密码的逻辑
-                    } else {
-                        System.out.println("Server---接收到的消息有误，程序并没有按预期进行...");
-                        System.out.println(message);
+                        case "Single" -> {
+                            sender += strs[1];
+                            targetName += strs[2];
+                            msg += strs[3];
+                        }
+                        case "Group" -> {
+                            sender += strs[1];
+                            targetName = "nil";
+                            msg += strs[3];
+                        }
+                        case "Change" -> {
+                            String uname = strs[1];
+                            String oldPwd = strs[2];
+                            String newPwd = strs[3];
+                            Map<String, String> userInfo = helper.readUserTable();
+                            if (userInfo.containsKey(uname) && userInfo.get(uname).equals(oldPwd)) {
+                                // 写入新内容
+                                String sql = "update user set password = '" + newPwd + "' where uname = '" + uname + "';";
+                                helper.executeSQL(sql);
+                                sendTo("update success");
+                            } else {
+                                sendTo("update error");
+                            }
+                        }
+                        default -> {
+                            System.out.println("Server---接收到的消息有误，程序并没有按预期进行...");
+                            System.out.println(message);
+                        }
                     }
                     Send(sender, targetName, msg);
                 }
@@ -160,7 +190,7 @@ public class ShineSpotServer {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ShineSpotServer server = new ShineSpotServer();
         server.start(10721);
     }
