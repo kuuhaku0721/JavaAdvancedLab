@@ -1,6 +1,10 @@
 package SSProject;
 
 
+import org.w3c.dom.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.sql.*;
 import java.util.HashMap;
@@ -19,15 +23,72 @@ import java.util.Map;
 
 public class MySQLHelper {
     private Connection conn;
+    private String dbname;
+    private String sqlname;
+    private String sqlpwd;
 
     public MySQLHelper() throws Exception {
+        // 加载驱动
         Class.forName("com.mysql.jdbc.Driver");
-        // TODO 之后这部分换成读取xml文件来写入配置信息
-        String url = "jdbc:mysql://127.0.0.1:3306/kuudb";
-        String username = "kuuhaku";
-        String password = "002016";
+        // 读取xml文件读取出来配置信息
+        ReadFromXML();
+        // 连接数据库
+        String url = "jdbc:mysql://127.0.0.1:3306/" + dbname;
+        String username = sqlname;
+        String password = sqlpwd;
         conn = DriverManager.getConnection(url, username, password);
     }
+
+    /**
+     * 使用DOM解析一个简单的XML文件
+     * 直接拿pom.xml用，反正它啥都有
+     */
+    private void ReadFromXML() {
+        String fileName = "src/main/java/SSProject/sqlsettings.xml";
+        try {
+            File xmlFile = new File(fileName);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(xmlFile);
+            document.getDocumentElement().normalize();
+            // System.out.println("Root element: " + document.getDocumentElement().getNodeName());
+            NodeList nodeList = document.getElementsByTagName("*");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    // System.out.println("Element: " + element.getNodeName());
+                    if (element.hasChildNodes()) {
+                        NodeList children = element.getChildNodes();
+                        Node child = children.item(0);
+                        if (child.getNodeType() == Node.TEXT_NODE) {
+                            switch (element.getNodeName()) {
+                                case "database" -> {
+                                    // System.out.println("database: " + child.getNodeValue().trim());
+                                    dbname = child.getNodeValue().trim();
+                                }
+                                case "username" -> {
+                                    // System.out.println("username: " + child.getNodeValue().trim());
+                                    sqlname = child.getNodeValue().trim();
+                                }
+                                case "password" -> {
+                                    // System.out.println("password: " + child.getNodeValue().trim());
+                                    sqlpwd = child.getNodeValue().trim();
+                                }
+                                default -> {
+                                    System.out.println("默认的");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 读取用户账号信息
      * @return key:用户名，value:密码
@@ -77,9 +138,6 @@ public class MySQLHelper {
      */
     public static void main(String[] args) throws Exception {
         MySQLHelper helper = new MySQLHelper();
-        Map<String, String> map = helper.readUserTable();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            System.out.println("Username: " + entry.getKey() + ", Password: " + entry.getValue());
-        }
+
     }
 }
