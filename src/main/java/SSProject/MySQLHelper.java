@@ -1,6 +1,11 @@
 package SSProject;
 
 
+import java.io.*;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 数据库帮助类
  * 主要功能包括：
@@ -13,4 +18,46 @@ package SSProject;
  */
 
 public class MySQLHelper {
+    private Connection conn;
+
+    public MySQLHelper() throws Exception {
+        Class.forName("com.mysql.jdbc.Driver");
+        // TODO 之后这部分换成读取xml文件来写入配置信息
+        String url = "jdbc:mysql://127.0.0.1:3306/kuudb";
+        String username = "kuuhaku";
+        String password = "002016";
+        conn = DriverManager.getConnection(url, username, password);
+    }
+    /**
+     * 读取用户账号信息
+     * @return key:用户名，value:密码
+     */
+    public Map<String, String> readUserTable() {
+        Map<String, String> userMap = new HashMap<>();
+
+        try (Statement stmt = conn.createStatement()) {
+            String query = "SELECT * FROM user";
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                String username = rs.getString("uname");
+                String password = rs.getString("password");
+                userMap.put(username, password);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userMap;
+    }
+
+    /**
+     * 测试用main函数
+     */
+    public static void main(String[] args) throws Exception {
+        MySQLHelper helper = new MySQLHelper();
+        Map<String, String> map = helper.readUserTable();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            System.out.println("Username: " + entry.getKey() + ", Password: " + entry.getValue());
+        }
+    }
 }
