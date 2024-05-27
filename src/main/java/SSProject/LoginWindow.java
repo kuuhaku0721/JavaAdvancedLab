@@ -8,6 +8,10 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,7 +21,7 @@ import java.util.Objects;
  * 2、查询已存在的用户名和密码，保存在缓存中
  * 3、创建窗口，等待用户输入
  * 4、验证用户输入是否正确
- * 5、continue;
+ * 5、登录通过显示主窗口，否则给出错误警示
  */
 public class LoginWindow extends JFrame {
     private MySQLHelper helper;

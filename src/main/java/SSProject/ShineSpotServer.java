@@ -6,7 +6,7 @@ package SSProject;
  * Stat: start
  * Desc: 课程要求的大作业程序设计，要求只说了要用六门课程中学习的技术，但是那样未免有点太意味がない
  *       既然是个大作业就要有个大作业的样子，最起码得是个完整的程序，比如有个UI界面之类的
- * 后继者请注意：
+ * From kuuhaku：
  *   This program may not earn you a high grade in the course
  *   because it is not "to the teacher's liking",
  *   but it will give you an understanding of Java desktop application programming,
@@ -14,6 +14,7 @@ package SSProject;
  */
 
 import java.io.*;
+import java.lang.reflect.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -25,7 +26,6 @@ import java.util.Map;
 /**
  * 服务器主类
  * 负责完成服务器的工作
- * 使用《实验：网络API》等等
  * 主要任务包括，启动服务器，等待连接，转发消息等等，消息传递的格式自定义一个简单的吧，用的太复杂了怕老师看不懂
  */
 public class ShineSpotServer {
@@ -44,6 +44,9 @@ public class ShineSpotServer {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Server started on [" + port + "] success...");
 
+            // 输出一下客户端句柄类的信息，也就是，打日志
+            getClassInfo(ClientHandler.class);
+
             while (true) {
                 Socket socket = serverSocket.accept();
                 System.out.println("Client [ " + socket + " ] connected success....");
@@ -56,6 +59,7 @@ public class ShineSpotServer {
             e.printStackTrace();
         }
     }
+
     /**
      * 向所有已连接的客户端转发消息
      */
@@ -83,6 +87,7 @@ public class ShineSpotServer {
             client.sendTo(msg);
         }
     }
+
     /**
      * 客户端断开连接，清理资源
      */
@@ -96,6 +101,73 @@ public class ShineSpotServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 反射机制的使用，获取客户端句柄类的信息并输出日志
+     * @param cls：客户端句柄类
+     */
+    private void getClassInfo(Class<?> cls) {
+        // 1、属性
+        Field[] fields = cls.getDeclaredFields();
+        System.out.println("属性:");
+        for (Field field : fields) {
+            System.out.print(field.getDeclaringClass().getName() + "--");      // 所在类
+            System.out.print(Modifier.toString(field.getModifiers()) + "--");  // 修饰符
+            System.out.print(field.getType().getName() + "--");                // 类型
+            System.out.print(field.getName());                                 // 名称
+            System.out.println();
+        }
+
+
+        // 2、方法
+        Method[] methods = cls.getDeclaredMethods();
+        System.out.println("方法:");
+        for (Method method : methods) {
+            System.out.print(method.getDeclaringClass().getName() + "--");     // 所在类
+            System.out.print(Modifier.toString(method.getModifiers()) + "--"); // 修饰符
+            System.out.print(method.getReturnType().getName() + "--");         // 返回值类型
+            System.out.print(method.getName());                                // 名称
+            // 参数列表
+            Parameter[] parameters = method.getParameters();
+            if (parameters.length > 0) {
+                System.out.print(" (");
+                for (Parameter parameter : parameters) {
+                    System.out.print(parameter.getType().getName() + " " + parameter.getName() + ", "); // 参数列表：类型 名称
+                }
+                System.out.print(") ");
+            }
+            // 异常
+            Class<?>[] exceptionTypes = method.getExceptionTypes();
+            if (exceptionTypes.length > 0) {
+                System.out.print("throws ");
+                for (Class<?> exceptionType : exceptionTypes) {
+                    System.out.print(exceptionType.getName());
+                }
+            }
+            System.out.println();
+        }
+
+        // 3、构造函数
+        Constructor<?>[] constructors = cls.getDeclaredConstructors();
+        System.out.println("构造函数:");
+        for (Constructor<?> constructor : constructors) {
+            System.out.print(constructor.getDeclaringClass().getName() + "--");         // 类名
+            System.out.print(Modifier.toString(constructor.getModifiers()) + "--");     // 修饰符
+            System.out.print(constructor.getName());                                    // 名称
+
+            // 构造函数也可能有参
+            Parameter[] parameters = constructor.getParameters();
+            if (parameters.length > 0) {
+                System.out.print(" (");
+                for (Parameter parameter : parameters) {
+                    System.out.print(parameter.getType().getName() + " " + parameter.getName() + ", ");
+                }
+                System.out.print(")");
+            }
+            System.out.println();
+        }
+        System.out.println("======显示完毕======");
     }
 
     /**

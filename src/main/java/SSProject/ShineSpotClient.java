@@ -1,24 +1,6 @@
 package SSProject;
 
 
-/**
- * 客户端类
- * 负责创建UI界面，实现连接服务端的功能，发送消息，显示聊天记录等等
- * 发送给服务端的消息依旧使用自定义格式，不同的类型以UI界面来区分，群聊或者私聊
- */
-
-
-/**
- * 任务计划：
- * 第一步：完成UI界面的搭建
- * 2、UI界面的功能测试
- * 3、初步完成网络连接部分
- * 4、完成服务器部分的接口搭建
- * 5、测试客户端和服务器的连通性
- * 6、完善其他功能的开发
- */
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -26,6 +8,16 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
 
+
+/**
+ * 客户端类
+ * 负责创建UI界面，实现连接服务端的功能，发送消息，显示聊天记录等等
+ * 发送给服务端的消息依旧使用自定义格式，不同的类型以UI界面来区分，群聊或者私聊
+ */
+
+/**
+ * 这里没有main函数，请到Main.java里面启动客户端
+ */
 public class ShineSpotClient extends JFrame {
     private JPanel rightPanel;
     private CardLayout cardLayout;

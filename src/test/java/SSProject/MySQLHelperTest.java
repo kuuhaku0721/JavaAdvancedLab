@@ -1,57 +1,47 @@
 package SSProject;
 
-
-import org.w3c.dom.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
+import java.io.File;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.*;
+
+
 /**
- * 数据库帮助类
- * 主要功能包括：
- * 1、读取xml文件中的数据库配置信息，连接数据库，建立JDBC连接
- * 2、对外提供接口，负责增删改查功能，查询数据库用户信息，实现密码修改等
- * 3、实现自定义注解负责SQL语句的写入
+ * 数据库的单元测试模块
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@interface SQLQuery {
-    String value();
-}
-public class MySQLHelper {
+
+public class MySQLHelperTest {
+
     private Connection conn;
     private String dbname;
     private String sqlname;
     private String sqlpwd;
-
-    public MySQLHelper() throws Exception {
+    @Before
+    public void setUp() throws Exception {
+        System.out.println("测试模块启动前执行...");
+        // 加载驱动
         Class.forName("com.mysql.jdbc.Driver");
-
         // 读取xml文件读取出来配置信息
         ReadFromXML();
-
-        // 使用读取文件出来的信息，连接数据库
+        // 连接数据库
         String url = "jdbc:mysql://127.0.0.1:3306/" + dbname;
         String username = sqlname;
         String password = sqlpwd;
         conn = DriverManager.getConnection(url, username, password);
     }
-
-    /**
-     * 解析XML文件
-     * 从文件中读取出来数据库用户名和密码
-     */
     private void ReadFromXML() {
-        // 文件路径，在项目路径下
         String fileName = "src/main/java/SSProject/sqlsettings.xml";
         try {
             File xmlFile = new File(fileName);
@@ -97,26 +87,16 @@ public class MySQLHelper {
         }
     }
 
-    /**
-     * 读取用户账号信息
-     * @return key:用户名，value:密码
-     */
-    @SQLQuery("SELECT * FROM user")
-    public Map<String, String> readUserTable() {
-        // 使用反射获取注解并执行对应的sql语句并执行
-        Method method = null;
-        try {
-            method = this.getClass().getDeclaredMethod("readUserTable");
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        SQLQuery annotation = method.getAnnotation(SQLQuery.class);
-        String sql = annotation.value();
+    @After
+    public void tearDown() throws Exception {
+        System.out.println("测试模块执行完毕执行...");
+    }
 
-        // 反射拿到sql语句之后，再调用jdbc的查询
+    @Test
+    public void readUserTable() {
         Map<String, String> userMap = new HashMap<>();
         try (Statement stmt = conn.createStatement()) {
-            // String sql = "SELECT * FROM user";
+            String sql = "SELECT * FROM user";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 String username = rs.getString("uname");
@@ -126,15 +106,11 @@ public class MySQLHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return userMap;
     }
 
-    /**
-     * 执行SQL语句
-     * @param sql: 要执行的sql语句
-     */
-    public void executeSQL(String sql) {
+    @Test
+    public void executeSQL() {
+        String sql = "SELECT * FROM user";
         Statement statement = null;
         try {
             statement = conn.createStatement();
@@ -152,11 +128,8 @@ public class MySQLHelper {
         }
     }
 
-    /**
-     * 测试用main函数
-     */
-    public static void main(String[] args) throws Exception {
-        MySQLHelper helper = new MySQLHelper();
-
+    @Test
+    public void main() {
+        System.out.println("测试用的启动函数，没有实际作用");
     }
 }
